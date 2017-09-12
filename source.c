@@ -153,11 +153,14 @@ void main(){
                         set_speed(0,0.5);
                 }else if((PORTA & LR_SENSOR_MASK)==(SENSOR_LEFT|SENSOR_RIGHT)){
                         set_speed(0.5,0.5);
+                }else if((PORTA & SENSOR_MASK)==(SENSOR_MIDDLE|SENSOR_LEFT)){
+			LATC=0;
+			while(1);
+
+                        change_lane();
                 }else if((PORTA & LR_SENSOR_MASK)==0){
                         crank_turn();
-                }else if((PORTA & SENSOR_MASK)==(SENSOR_MIDDLE||SENSOR_LEFT)){
-                        change_lane();
-                }
+		}
         }
 }
 
@@ -205,7 +208,7 @@ void timer0_handler(){
                 right_PWM_width=PWM_MAX_WIDTH;
         }
 
-        //SetDCPWM1(left_PWM_width);
+        //SetDCPWM2(left_PWM_width);
         //SetDCPWM2(right_PWM_width);
 
         left_rotaryencoder_deltacounter=0;
