@@ -17,17 +17,16 @@
 const char DIRECTION_FORWARD=0b011000;
 
 const char SENSOR_LEFT=0b1000;
-const char SENSOR_RIGHT=0b100;
+const char SENSOR_RIGHT=1;
 const char SENSOR_MIDDLE=0b10;
-const char SENSOR_RIGHT_FORWARD=0b1;
+const char SENSOR_RIGHT_FORWARD=0b100;
 
 const char SENSOR_MASK=0b1111;
-const char LR_SENSOR_MASK=0b1100;
-const char CHANGELANE_SENSOR_MASK=0b0111;
+const char LR_SENSOR_MASK=0b1000|1;
 
 const double PI=3.14159265359;
-const unsigned int MEASURE_SPEED_TIMER0_INTERVAL=3035;//ë¨ìxë™íËÉ^ÉCÉ}Å[0.5ïbä‘äu
-const unsigned int MAX_SPEED_COUNT=200;//TODO:ílåàíË
+const unsigned int MEASURE_SPEED_TIMER0_INTERVAL=3035;//ÈÄüÂ∫¶Ê∏¨ÂÆö„Çø„Ç§„Éû„Éº0.5ÁßíÈñìÈöî
+const unsigned int MAX_SPEED_COUNT=200;//TODO:ÂÄ§Ê±∫ÂÆö
 const unsigned int PWM_MAX_WIDTH=1023;
 
 volatile unsigned int left_rotaryencoder_deltacounter;
@@ -55,23 +54,23 @@ enum direction{
 };
 
 unsigned int mm_to_count(unsigned int mm){
-        return mm*36/65;//ÉZÉìÉTâ~é¸65mm ÉJÉEÉìÉg36
+        return mm*36/65;//„Çª„É≥„ÇµÂÜÜÂë®65mm „Ç´„Ç¶„É≥„Éà36
 }
 
 void debug_output(){
 	LATB=(PORTA<<4) & 0b11110000;
 }
 
-//FIXME:pwm=0 0Ç…âΩä|ÇØÇƒÇ‡0
-//FIXME:pwm=0,1023 CCPR1LÇ™CCPR1HÇ…ÉRÉsÅ[Ç≥ÇÍÇ»Ç¢
-//TODO:ëºÇ…volatileÇ™ïKóvÇ»å¬èäÇÕ
+//FIXME:pwm=0 0„Å´‰ΩïÊéõ„Åë„Å¶„ÇÇ0
+//FIXME:pwm=0,1023 CCPR1L„ÅåCCPR1H„Å´„Ç≥„Éî„Éº„Åï„Çå„Å™„ÅÑ
+//TODO:‰ªñ„Å´volatile„ÅåÂøÖË¶Å„Å™ÂÄãÊâÄ„ÅØ
 
 volatile unsigned int left_rotaryencoder_distance;
 volatile unsigned int right_rotaryencoder_distance;
 void walk(unsigned int distance){
-        distance=mm_to_count(distance);//HACK:ÉãÅ[Évì‡Ç…ì¸ÇÍÇÈÇ∆çƒåvéZÇµÇƒÉpÉtÉHÅ[É}ÉìÉXí·â∫ÇÃâ¬î\ê´Ç™Ç†ÇÈÇΩÇﬂ
+        distance=mm_to_count(distance);//HACK:„É´„Éº„ÉóÂÜÖ„Å´ÂÖ•„Çå„Çã„Å®ÂÜçË®àÁÆó„Åó„Å¶„Éë„Éï„Ç©„Éº„Éû„É≥„Çπ‰Ωé‰∏ã„ÅÆÂèØËÉΩÊÄß„Åå„ÅÇ„Çã„Åü„ÇÅ
         set_speed(0.5,0.5);
-        //íºêiÇ»ÇÃÇ≈ç∂âEÇÃìÆÇ´ÇÕìØÇ∂Ç∆âºíËÇµÇƒâEÇæÇØÇå©ÇÈ
+        //Áõ¥ÈÄ≤„Å™„ÅÆ„ÅßÂ∑¶Âè≥„ÅÆÂãï„Åç„ÅØÂêå„Åò„Å®‰ªÆÂÆö„Åó„Å¶Âè≥„Å†„Åë„ÇíË¶ã„Çã
         right_rotaryencoder_distance=0;
         while(right_rotaryencoder_distance<distance){
 		debug_output();
@@ -99,32 +98,32 @@ void turn(enum direction direction){
         set_speed(0.5,0.5);
 }
 
-void crank_turn();//[2058] call of function without prototypeó}é~
+void crank_turn();//[2058] call of function without prototypeÊäëÊ≠¢
 void crank_turn(){
-	LATCbits.LATC6=1;//ÉfÉoÉbÉOèoóÕ
+	LATCbits.LATC6=1;//„Éá„Éê„ÉÉ„Ç∞Âá∫Âäõ
         walk(184);
         turn(left);
-	LATCbits.LATC6=0;//ÉfÉoÉbÉOèoóÕ
+	LATCbits.LATC6=0;//„Éá„Éê„ÉÉ„Ç∞Âá∫Âäõ
 }
 
-void change_lane();//[2058] call of function without prototypeó}é~
+void change_lane();//[2058] call of function without prototypeÊäëÊ≠¢
 void change_lane(){
-	LATCbits.LATC7=1;//ÉfÉoÉbÉOèoóÕ
+	LATCbits.LATC7=1;//„Éá„Éê„ÉÉ„Ç∞Âá∫Âäõ
         walk(204);
         turn(right);
-        while((PORTA & SENSOR_LEFT)==SENSOR_LEFT){//ç∂ë§Ç…çïÇ¢ê¸Ç™óàÇÈÇ‹Ç≈
+        while((PORTA & SENSOR_LEFT)==SENSOR_LEFT){//Â∑¶ÂÅ¥„Å´Èªí„ÅÑÁ∑ö„ÅåÊù•„Çã„Åæ„Åß
 		debug_output();
 	}
         turn(left);
-	LATCbits.LATC7=0;//ÉfÉoÉbÉOèoóÕ
+	LATCbits.LATC7=0;//„Éá„Éê„ÉÉ„Ç∞Âá∫Âäõ
 }
 
 void main(){
         OSCCON=0x62;
 
-        TRISA=0b1111;//ÉtÉHÉgÉäÉtÉåÉNÉ^
-        TRISB=0b11;//ÉfÉoÉbÉOópLEDÇ∆ÉçÅ[É^ÉäÅ[ÉGÉìÉRÅ[É_Å[
-        TRISC=0;//ÉfÉoÉbÉOópÉsÉìÇ∆ÉÇÅ[É^Å[èoóÕ
+        TRISA=0b1111;//„Éï„Ç©„Éà„É™„Éï„É¨„ÇØ„Çø
+        TRISB=0b11;//„Éá„Éê„ÉÉ„Ç∞Áî®LED„Å®„É≠„Éº„Çø„É™„Éº„Ç®„É≥„Ç≥„Éº„ÉÄ„Éº
+        TRISC=0;//„Éá„Éê„ÉÉ„Ç∞Áî®„Éî„É≥„Å®„É¢„Éº„Çø„ÉºÂá∫Âäõ
         ADCON1=0b1111;
 
         INTCON2bits.TMR0IP=0;
@@ -138,9 +137,9 @@ void main(){
         OpenPWM1(0xFE);
         OpenPWM2(0xFE);
 
-        RCONbits.IPEN=1;//äÑçûÇ›óDêÊèáà óLå¯
-        INTCONbits.GIEH=1;//çÇà äÑçûÇ›óLå¯
-        INTCONbits.GIEL=1;//í·à äÑçûÇ›óLå¯
+        RCONbits.IPEN=1;//Ââ≤Ëæº„ÅøÂÑ™ÂÖàÈ†Ü‰ΩçÊúâÂäπ
+        INTCONbits.GIEH=1;//È´ò‰ΩçÂâ≤Ëæº„ÅøÊúâÂäπ
+        INTCONbits.GIEL=1;//‰Ωé‰ΩçÂâ≤Ëæº„ÅøÊúâÂäπ
         INTCONbits.INT0IE=1;
         INTCON3bits.INT1IE=1;
         INTCONbits.TMR0IE=1;
@@ -149,9 +148,9 @@ void main(){
 		debug_output();
 
                 if((PORTA & LR_SENSOR_MASK)==SENSOR_LEFT){
-                        set_speed(0.5,0.4);
+                        set_speed(0.5,0);
                 }else if((PORTA & LR_SENSOR_MASK)==SENSOR_RIGHT){
-                        set_speed(0.4,0.5);
+                        set_speed(0,0.5);
                 }else if((PORTA & LR_SENSOR_MASK)==(SENSOR_LEFT|SENSOR_RIGHT)){
                         set_speed(0.5,0.5);
                 }else if((PORTA & LR_SENSOR_MASK)==0){
@@ -162,14 +161,14 @@ void main(){
         }
 }
 
-#pragma code //Ç®ÇªÇÁÇ≠ïsóv
+#pragma code //„Åä„Åù„Çâ„Åè‰∏çË¶Å
 #pragma interrupt rotaryencoder_handler
 void rotaryencoder_handler(){
         if(INTCONbits.INT0IF==1){
                 left_rotaryencoder_deltacounter++;
                 left_rotaryencoder_distance++;
 
-                LATBbits.LATB3^=1;//ÉçÅ[É^ÉäÅ[ÉGÉìÉRÅ[É_Å[ ÉfÉoÉbÉOópèoóÕ
+                LATBbits.LATB3^=1;//„É≠„Éº„Çø„É™„Éº„Ç®„É≥„Ç≥„Éº„ÉÄ„Éº „Éá„Éê„ÉÉ„Ç∞Áî®Âá∫Âäõ
 
                 INTCONbits.INT0IF=0;
         }
@@ -177,7 +176,7 @@ void rotaryencoder_handler(){
                 right_rotaryencoder_deltacounter++;
                 right_rotaryencoder_distance++;
 
-                LATBbits.LATB3^=1;//ÉçÅ[É^ÉäÅ[ÉGÉìÉRÅ[É_Å[ ÉfÉoÉbÉOópèoóÕ
+                LATBbits.LATB3^=1;//„É≠„Éº„Çø„É™„Éº„Ç®„É≥„Ç≥„Éº„ÉÄ„Éº „Éá„Éê„ÉÉ„Ç∞Áî®Âá∫Âäõ
 
                 INTCON3bits.INT1IF=0;
         }			
@@ -196,8 +195,8 @@ void timer0_handler(){
         actual_left_speed=left_rotaryencoder_deltacounter;
         actual_right_speed=right_rotaryencoder_deltacounter;
 
-        left_PWM_width=left_PWM_width*goal_left_speed/actual_left_speed;//HACK:èÊéZë„ì¸ââéZéqÉLÉÉÉXÉgÇ≥ÇÍÇƒÇµÇ‹Ç§
-        right_PWM_width=right_PWM_width*goal_right_speed/actual_right_speed;//HACK:èÊéZë„ì¸ââéZéqÉLÉÉÉXÉgÇ≥ÇÍÇƒÇµÇ‹Ç§
+        left_PWM_width=left_PWM_width*goal_left_speed/actual_left_speed;//HACK:‰πóÁÆó‰ª£ÂÖ•ÊºîÁÆóÂ≠ê„Ç≠„É£„Çπ„Éà„Åï„Çå„Å¶„Åó„Åæ„ÅÜ
+        right_PWM_width=right_PWM_width*goal_right_speed/actual_right_speed;//HACK:‰πóÁÆó‰ª£ÂÖ•ÊºîÁÆóÂ≠ê„Ç≠„É£„Çπ„Éà„Åï„Çå„Å¶„Åó„Åæ„ÅÜ
 
         if(left_PWM_width>PWM_MAX_WIDTH){
                 left_PWM_width=PWM_MAX_WIDTH;
@@ -206,8 +205,8 @@ void timer0_handler(){
                 right_PWM_width=PWM_MAX_WIDTH;
         }
 
-        SetDCPWM1(left_PWM_width);
-        SetDCPWM2(right_PWM_width);
+        //SetDCPWM1(left_PWM_width);
+        //SetDCPWM2(right_PWM_width);
 
         left_rotaryencoder_deltacounter=0;
         right_rotaryencoder_deltacounter=0;
