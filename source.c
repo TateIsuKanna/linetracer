@@ -11,6 +11,7 @@
 #pragma config WRTB=OFF,WRTC=OFF,WRTD=OFF,EBTR0=OFF
 #pragma config EBTR1=OFF,EBTR2=OFF,EBTR3=OFF,EBTRB=OFF
 
+const double motor_speed=0.8;
 
 //const char DIRECTION_LEFT=0b00100100;
 //const char DIRECTION_RIGHT=0b00001010;
@@ -69,7 +70,7 @@ volatile unsigned int left_rotaryencoder_distance;
 volatile unsigned int right_rotaryencoder_distance;
 void walk(unsigned int distance){
         distance=mm_to_count(distance);//HACK:ループ内に入れると再計算してパフォーマンス低下の可能性があるため
-        set_speed(0.5,0.5);
+        set_speed(motor_speed,motor_speed);
         //直進なので左右の動きは同じと仮定して右だけを見る
         right_rotaryencoder_distance=0;
         while(right_rotaryencoder_distance<distance){
@@ -81,21 +82,21 @@ void turn(enum direction direction){
         const unsigned int ARC_LENGTH_COUNT=mm_to_count(PI*92/4);
         switch(direction){
                 case left:
-                        set_speed(0,0.5);
+                        set_speed(0,motor_speed);
                         right_rotaryencoder_distance=0;
                         while(right_rotaryencoder_distance<ARC_LENGTH_COUNT){
 				debug_output();
 			}
                         break;
                 case right:
-                        set_speed(0.5,0);
+                        set_speed(motor_speed,0);
                         left_rotaryencoder_distance=0;
                         while(left_rotaryencoder_distance<ARC_LENGTH_COUNT){
 				debug_output();
 			}
                         break;
         }
-        set_speed(0.5,0.5);
+        set_speed(motor_speed,motor_speed);
 }
 
 void crank_turn();//[2058] call of function without prototype抑止
@@ -131,7 +132,7 @@ void main(){
         WriteTimer0(MEASURE_SPEED_TIMER0_INTERVAL);
 
         LATC=DIRECTION_FORWARD;
-        set_speed(0.5,0.5);
+        set_speed(motor_speed,motor_speed);
 
         OpenTimer2(TIMER_INT_OFF & T2_PS_1_4 & T2_POST_1_1);
         OpenPWM1(0xFE);
@@ -152,11 +153,11 @@ void main(){
                 }else if((PORTA & LR_SENSOR_MASK)==0){
                         crank_turn();
                 }else if((PORTA & LR_SENSOR_MASK)==SENSOR_LEFT){
-                        set_speed(0.5,0);
+                        set_speed(motor_speed,0);
                 }else if((PORTA & LR_SENSOR_MASK)==SENSOR_RIGHT){
-                        set_speed(0,0.6);
+                        set_speed(0,motor_speed*1.2);
                 }else if((PORTA & LR_SENSOR_MASK)==(SENSOR_LEFT|SENSOR_RIGHT)){
-                        set_speed(0.5,0.5);
+                        set_speed(motor_speed,motor_speed);
 		}
         }
 }
