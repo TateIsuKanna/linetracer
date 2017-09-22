@@ -109,7 +109,7 @@ void crank_turn(){
 void change_lane();//[2058] call of function without prototype抑止
 void change_lane(){
 	LATCbits.LATC7=1;//デバッグ出力
-        walk(204);
+        walk(224);
         turn(right);
         while((PORTA & SENSOR_LEFT)==SENSOR_LEFT){//左側に黒い線が来るまで
 		debug_output();
@@ -154,7 +154,7 @@ void main(){
                 }else if((PORTA & LR_SENSOR_MASK)==SENSOR_LEFT){
                         set_speed(0.5,0);
                 }else if((PORTA & LR_SENSOR_MASK)==SENSOR_RIGHT){
-                        set_speed(0,0.5);
+                        set_speed(0,0.6);
                 }else if((PORTA & LR_SENSOR_MASK)==(SENSOR_LEFT|SENSOR_RIGHT)){
                         set_speed(0.5,0.5);
 		}
