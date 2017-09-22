@@ -58,7 +58,7 @@ unsigned int mm_to_count(unsigned int mm){
 }
 
 void debug_output(){
-	LATB=(PORTA<<4) & 0b11110000;
+	LATB=LATB|((PORTA<<4) & 0b11110000);
 }
 
 //FIXME:pwm=0 0に何掛けても0
