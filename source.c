@@ -152,9 +152,9 @@ void main(){
                 }else if((PORTA & LR_SENSOR_MASK)==0){
                         crank_turn();
                 }else if((PORTA & LR_SENSOR_MASK)==SENSOR_LEFT){
-                        set_speed(0.5,0);
+                        set_speed(0.5,0.1);
                 }else if((PORTA & LR_SENSOR_MASK)==SENSOR_RIGHT){
-                        set_speed(0,0.5);
+                        set_speed(0.1,0.5);
                 }else if((PORTA & LR_SENSOR_MASK)==(SENSOR_LEFT|SENSOR_RIGHT)){
                         set_speed(0.5,0.5);
 		}
