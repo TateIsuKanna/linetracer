@@ -58,7 +58,7 @@ unsigned int mm_to_count(unsigned int mm){
 }
 
 void debug_output(){
-	LATB=LATB|((PORTA<<4) & 0b11110000);
+	LATB=(LATB&0b1111)|((PORTA<<4) & 0b11110000);
 }
 
 //FIXME:pwm=0 0に何掛けても0
@@ -152,9 +152,9 @@ void main(){
                 }else if((PORTA & LR_SENSOR_MASK)==0){
                         crank_turn();
                 }else if((PORTA & LR_SENSOR_MASK)==SENSOR_LEFT){
-                        set_speed(0.5,0.1);
+                        set_speed(0.5,0);
                 }else if((PORTA & LR_SENSOR_MASK)==SENSOR_RIGHT){
-                        set_speed(0.1,0.5);
+                        set_speed(0,0.5);
                 }else if((PORTA & LR_SENSOR_MASK)==(SENSOR_LEFT|SENSOR_RIGHT)){
                         set_speed(0.5,0.5);
 		}
